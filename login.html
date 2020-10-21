@@ -80,7 +80,6 @@
 
     const formElem = document.querySelector('form');
 
-
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         // User is signed in.
@@ -106,7 +105,6 @@
       });
 
       formElem.reset();
-
   });
 
   </script>

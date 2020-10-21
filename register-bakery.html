@@ -37,6 +37,7 @@
   <br>
 
   <div class="col-md-6 offset-md-3">
+    <p id='status'></p>
     <h3>Register Your Bakery!</h3> <br>
     <form>
 
@@ -130,8 +131,6 @@
 
   const formElem = document.querySelector('form');
 
-
-
   formElem.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -142,9 +141,7 @@
     var username = document.getElementById('user').value;
     var phone = document.getElementById('phone').value;
 
-    firebase.auth().createUserWithEmailAndPassword(document.querySelector('#email').value, document.querySelector('#password').value).then(cred => {
-      console.log(cred);
-      console.log(address);
+    firebase.auth().createUserWithEmailAndPassword(document.querySelector('#email').value, document.querySelector('#password').value).then(function() {
       firebase.database().ref('bakery/' + username).set({
         Bakery: bakery,
         Address: address,
@@ -153,10 +150,25 @@
         Last: last,
         Phone: phone
       });
+    }).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log(errorCode);
+
+      $('#status').html('<div class="alert alert-danger alert-dismissible fade show" role="alert">'+ errorMessage + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
     });
 
-    formElem.reset();
+    // firebase.database().ref('bakery/' + username).set({
+    //   Bakery: bakery,
+    //   Address: address,
+    //   City: city,
+    //   First: first,
+    //   Last: last,
+    //   Phone: phone
+    // });
 
+    formElem.reset();
   });
 
   </script>
