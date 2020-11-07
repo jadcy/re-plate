@@ -27,14 +27,10 @@
         <li class="nav-item active">
           <a class="nav-link" href="login.html">Login <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="register.html">Register</a>
-        </li>
       </ul>
     </div>
   </nav>
 
-  <br>
   <br>
 
   <div class="col-md-6 offset-md-3">
@@ -65,6 +61,8 @@
 
   <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-auth.js"></script>
 
+  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-database.js"></script>
+
   <script>
     // Your web app's Firebase configuration
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -82,8 +80,49 @@
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
 
-    const formElem = document.querySelector('form');
 
+    //testing
+    database = firebase.database();
+
+    var ref = database.ref('customer');
+    ref.on('value', gotData, errData);
+
+    function gotData(data) {
+      var customers = data.val();
+      var keys = Object.keys(customers);
+      console.log(keys);
+      for(var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+        var username = customers[k].Username;
+        var hist = customers[k].OrderHist;
+        var tardy = customers[k].Tardies;
+
+        var updates = {};
+        updates['/customer/' + username + '/Priority/'] = calculate(username, hist, tardy);
+
+        firebase.database().ref().update(updates);
+
+      }
+    }
+
+    function errData(err) {
+      console.log('Error');
+      console.log(err);
+    }
+
+    function calculate(user, history, tardies) {
+      //calculate how much priority
+      if(history == 0 && tardies == 0) {
+        return 0;
+      }
+      return 1/(.75*history + .25*tardies)
+    }
+
+
+
+    //testing
+
+    const formElem = document.querySelector('form');
 
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
@@ -110,7 +149,6 @@
       });
 
       formElem.reset();
-
   });
 
   </script>
