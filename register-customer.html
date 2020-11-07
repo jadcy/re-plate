@@ -51,11 +51,6 @@
       </div>
 
       <div class="form-group">
-        <label>Username</label> <input
-        type="text" class="form-control" name="user" id="user">
-      </div>
-
-      <div class="form-group">
         <label>Email</label> <input
         type="text" class="form-control" name="email" id="email">
       </div>
@@ -110,12 +105,12 @@
 
       var first = document.getElementById('fName').value;
       var last = document.getElementById('lName').value;
-      var username = document.getElementById('user').value;
       var phone = document.getElementById('phone').value;
+      var email = document.getElementById('email').value
 
       firebase.auth().createUserWithEmailAndPassword(document.querySelector('#email').value, document.querySelector('#password').value).then(function() {
-        firebase.database().ref('customer/' + username).set({
-          Username: username,
+        // alert(firebase.auth().currentUser.uid)
+        firebase.database().ref('customer/' + firebase.auth().currentUser.uid).set({
           First: first,
           Last: last,
           Phone: phone,
