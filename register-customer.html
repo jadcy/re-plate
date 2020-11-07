@@ -116,9 +116,13 @@
 
       firebase.auth().createUserWithEmailAndPassword(document.querySelector('#email').value, document.querySelector('#password').value).then(function() {
         firebase.database().ref('customer/' + username).set({
+          Username: username,
           First: first,
           Last: last,
-          Phone: phone
+          Phone: phone,
+          Priority: 0,
+          OrderHist: 1,
+          Tardies: 0
         });
       }).catch(function(error) {
         // Handle Errors here.
@@ -128,12 +132,6 @@
 
         $('#status').html('<div class="alert alert-danger alert-dismissible fade show" role="alert">'+ errorMessage + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
       });
-
-      // firebase.database().ref('customer/' + username).set({
-      //   First: first,
-      //   Last: last,
-      //   Phone: phone
-      // });
 
       formElem.reset();
   });
