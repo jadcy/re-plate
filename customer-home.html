@@ -13,7 +13,7 @@
   crossorigin="anonymous">
 
   <meta charset="ISO-8859-1">
-  <title>Hi __</title>
+  <title>Home</title>
 </head>
 <body>
 
@@ -79,7 +79,30 @@
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         // User is signed in.
-        document.getElementById("greeting").innerHTML = "Welcome " + user.email;
+        database = firebase.database();
+
+        var ref = database.ref('customer');
+        ref.on('value', gotData, errData);
+        var name;
+
+        function gotData(data) {
+          var customers = data.val();
+          var keys = Object.keys(customers);
+          // console.log(keys);
+          for(var i = 0; i < keys.length; i++) {
+            var k = keys[i];
+            if(firebase.auth().currentUser.uid == (k)) {
+              name = customers[k].First;
+              document.getElementById("greeting").innerHTML = "Welcome " + name;
+              break;
+            }
+          }
+        }
+
+        function errData(err) {
+          console.log('Error');
+          console.log(err);
+        }
 
       } else {
         // User is signed out.

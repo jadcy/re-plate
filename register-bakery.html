@@ -76,11 +76,6 @@
       </div>
 
       <div class="form-group">
-        <label>Username</label> <input
-        type="text" class="form-control" name="user" id="user">
-      </div>
-
-      <div class="form-group">
         <label>Email</label> <input
         type="text" class="form-control" name="email" id="email">
       </div>
@@ -137,11 +132,10 @@
     var address = document.getElementById('address').value + " " + document.getElementById('city').value + ", " + document.getElementById('state').value + " " + document.getElementById('zip').value;
     var first = document.getElementById('fName').value;
     var last = document.getElementById('lName').value;
-    var username = document.getElementById('user').value;
     var phone = document.getElementById('phone').value;
 
     firebase.auth().createUserWithEmailAndPassword(document.querySelector('#email').value, document.querySelector('#password').value).then(function() {
-      firebase.database().ref('bakery/' + username).set({
+      firebase.database().ref('bakery/' + firebase.auth().currentUser.uid).set({
         Bakery: bakery,
         Address: address,
         City: city,
