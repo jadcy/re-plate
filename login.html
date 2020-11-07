@@ -50,11 +50,11 @@
 
       <div class="form-check form-check-inline">
         <input class="form-check-input" type="radio" name="type" id="inlineRadio1" value="bakery">
-        <label class="form-check-label" for="inlineRadio1">Bakery</label>
+        <label class="form-check-label" for="inlineRadio1">Customer</label>
       </div>
       <div class="form-check form-check-inline">
         <input class="form-check-input" type="radio" name="type" id="inlineRadio2" value="customer">
-        <label class="form-check-label" for="inlineRadio2">Customer</label>
+        <label class="form-check-label" for="inlineRadio2">Bakery</label>
       </div>
       <br><br>
       <button id="submit" type="submit" class="btn btn-outline-info">Login</button>
@@ -159,6 +159,18 @@
 
       formElem.reset();
   });
+
+   var bakery = document.getElementById("inlineRadio1"),
+        customer = document.getElementById("inlineRadio2"),
+        submitButton = document.getElementById("submit");
+
+         submitButton.addEventListener("click", function () {
+         if (bakery.checked) {
+         window.location = "file:///Users/briankoo/Documents/GitHub/re-plate/customer-home.html";
+         } else {
+         window.location = "file:///Users/briankoo/Documents/GitHub/re-plate/bakery-home.html";
+    }
+    }, false);
 
   </script>
 
