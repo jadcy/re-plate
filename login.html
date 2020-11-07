@@ -137,7 +137,17 @@
       if (user) {
         // User is signed in.
         document.getElementById("status").innerHTML = "Signed in as " + user.email;
-        // ...
+        var bakery = document.getElementById("inlineRadio1"),
+        customer = document.getElementById("inlineRadio2"),
+        submitButton = document.getElementById("submit");
+
+
+        if (bakery.checked) {
+          window.location.href = "bakery-home.html";
+        } else {
+          window.location.href = "customer-home.html";
+        }
+
       } else {
         // User is signed out.
         document.getElementById("status").innerHTML = "Not Logged In";
@@ -160,17 +170,6 @@
       formElem.reset();
   });
 
-   var bakery = document.getElementById("inlineRadio1"),
-        customer = document.getElementById("inlineRadio2"),
-        submitButton = document.getElementById("submit");
-
-         submitButton.addEventListener("click", function () {
-         if (bakery.checked) {
-         window.location = "file:///Users/briankoo/Documents/GitHub/re-plate/customer-home.html";
-         } else {
-         window.location = "file:///Users/briankoo/Documents/GitHub/re-plate/bakery-home.html";
-    }
-    }, false);
 
   </script>
 
