@@ -62,11 +62,11 @@
 			    </div>
 			    <div class="col-sm">
 						<div class="form-check form-check-inline">
-						  <input class="form-check-input" type="radio" name="cough" id="inlineRadio1" value="option1">
+						  <input class="form-check-input" type="radio" name="cough" id="inlineRadio3" value="option1">
 						  <label class="form-check-label" for="inlineRadio1">Yes</label>
 						</div>
 						<div class="form-check form-check-inline">
-						  <input class="form-check-input" type="radio" name="cough" id="inlineRadio2" value="option2">
+						  <input class="form-check-input" type="radio" name="cough" id="inlineRadio4" value="option2">
 						  <label class="form-check-label" for="inlineRadio2">No</label>
 						</div>
 			    </div>
@@ -79,11 +79,11 @@
 			    </div>
 			    <div class="col-sm">
 						<div class="form-check form-check-inline">
-						  <input class="form-check-input" type="radio" name="breath" id="inlineRadio1" value="option1">
+						  <input class="form-check-input" type="radio" name="breath" id="inlineRadio5" value="option1">
 						  <label class="form-check-label" for="inlineRadio1">Yes</label>
 						</div>
 						<div class="form-check form-check-inline">
-						  <input class="form-check-input" type="radio" name="breath" id="inlineRadio2" value="option2">
+						  <input class="form-check-input" type="radio" name="breath" id="inlineRadio6" value="option2">
 						  <label class="form-check-label" for="inlineRadio2">No</label>
 						</div>
 			    </div>
@@ -95,11 +95,11 @@
 			    </div>
 			    <div class="col-sm">
 						<div class="form-check form-check-inline">
-						  <input class="form-check-input" type="radio" name="itch" id="inlineRadio1" value="option1">
+						  <input class="form-check-input" type="radio" name="itch" id="inlineRadio7" value="option1">
 						  <label class="form-check-label" for="inlineRadio1">Yes</label>
 						</div>
 						<div class="form-check form-check-inline">
-						  <input class="form-check-input" type="radio" name="itch" id="inlineRadio2" value="option2">
+						  <input class="form-check-input" type="radio" name="itch" id="inlineRadio8" value="option2">
 						  <label class="form-check-label" for="inlineRadio2">No</label>
 						</div>
 			    </div>
@@ -111,11 +111,11 @@
 			    </div>
 			    <div class="col-sm">
 						<div class="form-check form-check-inline">
-						  <input class="form-check-input" type="radio" name="pain" id="inlineRadio1" value="option1">
+						  <input class="form-check-input" type="radio" name="pain" id="inlineRadio9" value="option1">
 						  <label class="form-check-label" for="inlineRadio1">Yes</label>
 						</div>
 						<div class="form-check form-check-inline">
-						  <input class="form-check-input" type="radio" name="pain" id="inlineRadio2" value="option2">
+						  <input class="form-check-input" type="radio" name="pain" id="inlineRadio10" value="option2">
 						  <label class="form-check-label" for="inlineRadio2">No</label>
 						</div>
 			    </div>
@@ -127,20 +127,82 @@
 			    </div>
 			    <div class="col-sm">
 						<div class="form-check form-check-inline">
-						  <input class="form-check-input" type="radio" name="taste" id="inlineRadio1" value="option1">
+						  <input class="form-check-input" type="radio" name="taste" id="inlineRadio11" value="option1">
 						  <label class="form-check-label" for="inlineRadio1">Yes</label>
 						</div>
 						<div class="form-check form-check-inline">
-						  <input class="form-check-input" type="radio" name="taste" id="inlineRadio2" value="option2">
+						  <input class="form-check-input" type="radio" name="taste" id="inlineRadio12" value="option2">
 						  <label class="form-check-label" for="inlineRadio2">No</label>
 						</div>
 			    </div>
 			  </div>
-				<button type="submit" class="btn btn-success">Submit</button>
+				<a id = "submit" class="btn btn-success" onclick = "checkCovid()">Submit</a>
 			</div>
 
 		</form>
 	</div>
+	<script>
+		function checkCovid(){
+
+			var healthy = document.getElementById('inlineRadio2').checked &&
+				document.getElementById('inlineRadio4').checked &&
+				document.getElementById('inlineRadio6').checked &&
+				document.getElementById('inlineRadio8').checked &&
+				document.getElementById('inlineRadio10').checked &&
+				document.getElementById('inlineRadio12').checked;
+
+			if(!healthy){
+				console.log("redirecting");
+				alert("It seems like you might caught a COVID-19. Please use our app after you feel better.");
+				window.location.href = "index.html";
+			}
+			else{
+				window.location.href = "customer-home.html";
+			}
+		}
+
+	</script>
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+       https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-analytics.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-auth.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-database.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    var firebaseConfig = {
+      apiKey: "AIzaSyBOBBNZIvImKFJIpJeMrEswpopwY0nnlQk",
+      authDomain: "re-plate-d1d8a.firebaseapp.com",
+      databaseURL: "https://re-plate-d1d8a.firebaseio.com",
+      projectId: "re-plate-d1d8a",
+      storageBucket: "re-plate-d1d8a.appspot.com",
+      messagingSenderId: "983654362441",
+      appId: "1:983654362441:web:629d13cf84fdb70c1f7e98",
+      measurementId: "G-NLK3FKYFC0"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // User is signed in.
+
+      } else {
+        // User is signed out.
+        alert("signed out!")
+        window.location.href = "index.html";
+        // ...
+      }
+    });
+  </script>
 
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
 		integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
