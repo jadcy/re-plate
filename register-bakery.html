@@ -38,7 +38,7 @@
   <div class="col-md-6 offset-md-3">
     <p id='status'></p>
     <h3>Register Your Bakery!</h3> <br>
-    <form>
+    <form action = "bakery-home.html">
 
       <div class="form-group">
         <label>Your Bakery</label> <input
@@ -143,6 +143,8 @@
         Last: last,
         Phone: phone
       });
+      alert("Successfully Registered. Redirecting to the Bakery-Home page.");
+      window.location.href = "bakery-home.html";
     }).catch(function(error) {
       // Handle Errors here.
       var errorCode = error.code;

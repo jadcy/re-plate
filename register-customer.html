@@ -118,6 +118,8 @@
           OrderHist: 1,
           Tardies: 0
         });
+        alert("Successfully Registered. Redirecting to the Customer-Home page.");
+      window.location.href = "customer-home.html";
       }).catch(function(error) {
         // Handle Errors here.
         var errorCode = error.code;
