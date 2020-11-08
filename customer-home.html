@@ -153,8 +153,6 @@
           }
         }
 
-        var ids = [];
-        var deets = [];
         var ref = database.ref('/inventory');
         ref.on('value', initialData);
 
@@ -166,33 +164,41 @@
           for(var i = 0; i < keys.length; i++) {
             var k = keys[i];
             console.log(k);
-            ids.push(k);
-            var bake, add, phone;
-            var ref = firebase.database().ref('/bakery/'+k+'/Bakery');
+            var foods;
+            var ref = firebase.database().ref('/inventory/'+k);
             ref.on("value", function(snapshot) {
-               bake = snapshot.val();
-               console.log(bake)
+               // console.log(snapshot.val());
+               foods = snapshot.val();
             });
-            ref = firebase.database().ref('/bakery/'+k+'/Address');
-            ref.on("value", function(snapshot) {
-               add = snapshot.val();
+            console.log(foods)
+            Object.keys(foods).forEach(function(key) {
+                console.log(key, foods[key]);
+                console.log(foods[key].Amount)
+                var bake, add, phone, amt;
+                amt = foods[key].Amount;
+                var ref = firebase.database().ref('/bakery/'+k+'/Bakery');
+                ref.on("value", function(snapshot) {
+                   bake = snapshot.val();
+                });
+                ref = firebase.database().ref('/bakery/'+k+'/Address');
+                ref.on("value", function(snapshot) {
+                   add = snapshot.val();
+                });
+                ref = firebase.database().ref('/bakery/'+k+'/Phone');
+                ref.on("value", function(snapshot) {
+                   phone = snapshot.val();
+                   bakeries.push({
+                       Bakery: bake,
+                       Address: add,
+                       Phone: phone,
+                       Product: key,
+                       Amount: amt
+                   });
+                   console.log(bakeries);
+                   loadTableData(bakeries);
+                });
             });
-            ref = firebase.database().ref('/bakery/'+k+'/Phone');
-            ref.on("value", function(snapshot) {
-               phone = snapshot.val();
-            });
-            console.log(bake);
-            bakeries.push({
-                Bakery: bake,
-                Address: add,
-                Phone: phone,
-                Product: inventory[k].Product,
-                Amount: inventory[k].Amount
-            });
-            console.log(bakeries);
-            deets = [];
           }
-          // loadTableData(bakeries);
         }
 
         function errData(err) {
@@ -204,7 +210,6 @@
         // User is signed out.
         alert("signed out!")
         window.location.href = "index.html";
-        // ...
       }
     });
   </script>
