@@ -38,15 +38,74 @@
     <br>
     <h1 id="greeting"></h1>
 
-    <p>We're trying to do help solve food insecurity and food waste in the LA area. If you want to help our community, local bakeries, and local friends. Register below! Or log in above <3 ;)</p>
-    <p>blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah</p
-    <span>
-      <a href="register-bakery.html"><button type="button" class="btn btn-outline-primary">Register as Bakery</button></a>
-      <a href="register-customer.html"><button type="button" class="btn btn-outline-info">Register as Customer</button></a>
-    </span>
-
-    <br><br>
+    <h2>Here are some available bakeries bro</h2>
   </div>
+
+  <div class="row justify-content-center">
+      <div class="col-auto">
+        <table class="table table-striped table-responsive mt-4" id="bakeries">
+          <thead>
+            <tr>
+              <th>Bakery</th>
+              <th>Address</th>
+              <th>Phone</th>
+              <th>Product</th>
+              <th>Amount</th>
+              <th>Request</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+  </div>
+
+
+  <script>
+    const items1 = [
+    { Bakery: "Dulce", Address: "123 Figueroa St Los Angeles, California 90007", Phone: "123123123", Product: "Donuts", Amount: "2"},
+    { Bakery: "Dulce", Address: "123 Figueroa St Los Angeles, California 90007", Phone: "123123123", Product: "Croissant", Amount: "2"},
+    { Bakery: "Krispy Kreme", Address: "123 Figueroa St Los Angeles, California 90007", Phone: "123123123", Product: "Bread", Amount: "2"},
+    ];
+    var count = 0;
+
+    function loadTableData(items) {
+      const table = document.getElementById("bakeries");
+      items.forEach( item => {
+        let row = table.insertRow();
+        let name = row.insertCell(0);
+        name.innerHTML = item.Bakery;
+        let add = row.insertCell(1);
+        add.innerHTML = item.Address;
+        let phone = row.insertCell(2);
+        phone.innerHTML = item.Phone;
+        let prod = row.insertCell(3);
+        prod.innerHTML = item.Product;
+        let amt = row.insertCell(4);
+        amt.innerHTML = item.Amount;
+        let status = row.insertCell(5);
+        status.innerHTML = '<button class="btn btn-outline-success" data-toggle="modal" data-target="#modal'+count+'">Order</button><div class="modal fade" id="modal'+count+'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="exampleModalLabel">'+ item.Bakery+'</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body">'+item.Product+'</div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button><button type="button" class="btn btn-primary">Confirm Order</button></div></div></div></div>';
+        count += 1;
+      });
+    }
+
+    loadTableData(items1);
+
+    // function update(id) {
+    //   console.log(id.innerHTML)
+    //   // console.log("hello");
+    //   // console.log(document.getElementById(id).innerHTML);
+    //   if(id.innerHTML == "Pending" ){
+    //     id.innerHTML = "Accepted";
+    //     id.className = "btn btn btn-outline-success";
+    //   }
+    //   else{
+    //     id.innerHTML = "Pending";
+    //     id.className = "btn btn btn-outline-danger";
+    //   }
+    // }
+  </script>
+
 
   <!-- The core Firebase JS SDK is always required and must be listed first -->
   <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
@@ -93,7 +152,7 @@
             var k = keys[i];
             if(firebase.auth().currentUser.uid == (k)) {
               name = customers[k].First;
-              document.getElementById("greeting").innerHTML = "Welcome " + name;
+              document.getElementById("greeting").innerHTML = "Welcome " + name + "! :)";
               break;
             }
           }
