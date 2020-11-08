@@ -33,7 +33,6 @@
     </div>
   </nav>
 
-
   <div class="col-md-6 offset-md-3">
     <br>
     <h1 id="greeting"></h1>
@@ -60,17 +59,27 @@
       </div>
   </div>
 
-
   <script>
-    const items1 = [
-    { Bakery: "Dulce", Address: "123 Figueroa St Los Angeles, California 90007", Phone: "123123123", Product: "Donuts", Amount: "2"},
-    { Bakery: "Dulce", Address: "123 Figueroa St Los Angeles, California 90007", Phone: "123123123", Product: "Croissant", Amount: "2"},
-    { Bakery: "Krispy Kreme", Address: "123 Figueroa St Los Angeles, California 90007", Phone: "123123123", Product: "Bread", Amount: "2"},
-    ];
+    var bakeries = [];
     var count = 0;
 
     function loadTableData(items) {
+      $('#bakeries tr').remove();
       const table = document.getElementById("bakeries");
+      var header = table.createTHead();
+      var row = header.insertRow(0);
+      var cell = row.insertCell(0);
+      cell.innerHTML = "<b>Bakery</b>";
+      var cell1 = row.insertCell(1);
+      cell1.innerHTML = "<b>Address</b>";
+      var cell2 = row.insertCell(2);
+      cell2.innerHTML = "<b>Phone</b>";
+      var cell3 = row.insertCell(3);
+      cell3.innerHTML = "<b>Product</b>";
+      var cell4 = row.insertCell(4);
+      cell4.innerHTML = "<b>Amount</b>";
+      var cell5 = row.insertCell(5);
+      cell5.innerHTML = "<b>Request</b>";
       items.forEach( item => {
         let row = table.insertRow();
         let name = row.insertCell(0);
@@ -89,7 +98,7 @@
       });
     }
 
-    loadTableData(items1);
+    loadTableData(bakeries);
   </script>
 
 
@@ -142,6 +151,48 @@
               break;
             }
           }
+        }
+
+        var ids = [];
+        var deets = [];
+        var ref = database.ref('/inventory');
+        ref.on('value', initialData);
+
+        function initialData(data) {
+          bakeries = [];
+          var inventory = data.val();
+          var keys = Object.keys(inventory);
+          // console.log(keys);
+          for(var i = 0; i < keys.length; i++) {
+            var k = keys[i];
+            console.log(k);
+            ids.push(k);
+            var bake, add, phone;
+            var ref = firebase.database().ref('/bakery/'+k+'/Bakery');
+            ref.on("value", function(snapshot) {
+               bake = snapshot.val();
+               console.log(bake)
+            });
+            ref = firebase.database().ref('/bakery/'+k+'/Address');
+            ref.on("value", function(snapshot) {
+               add = snapshot.val();
+            });
+            ref = firebase.database().ref('/bakery/'+k+'/Phone');
+            ref.on("value", function(snapshot) {
+               phone = snapshot.val();
+            });
+            console.log(bake);
+            bakeries.push({
+                Bakery: bake,
+                Address: add,
+                Phone: phone,
+                Product: inventory[k].Product,
+                Amount: inventory[k].Amount
+            });
+            console.log(bakeries);
+            deets = [];
+          }
+          // loadTableData(bakeries);
         }
 
         function errData(err) {
