@@ -36,8 +36,8 @@
   <br>
 
   <div class="col-md-6 offset-md-3">
-    <p id='status'>Not Logged In</p>
     <form id="myForm" class="form">
+      <p id="status"></p>
       <div class="form-group">
         <label>Email</label>
         <input type="text" class="form-control" id="email" name="email">
@@ -49,8 +49,6 @@
       </div>
 
       <button id="submit" type="submit" class="btn btn-outline-info">Login</button>
-
-      <button type="button" onclick="firebase.auth().signOut()" class="btn btn-outline-danger">Log Out</button>
     </form>
   </div>
 
@@ -126,7 +124,7 @@
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         // User is signed in.
-        document.getElementById("status").innerHTML = "Signed in as " + user.email;
+        // document.getElementById("status").innerHTML = "Signed in as " + user.email;
 
         database = firebase.database();
 
@@ -169,7 +167,7 @@
 
       } else {
         // User is signed out.
-        document.getElementById("status").innerHTML = "Not Logged In";
+        // document.getElementById("status").innerHTML = "Not Logged In";
         // ...
       }
     });
