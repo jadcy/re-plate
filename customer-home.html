@@ -60,6 +60,15 @@
   </div>
 
   <script>
+    function reqOrder(uid, prod, amt) {
+      alert("confirming " + `${uid}, ${prod}, ${amt}`)
+      // console.log(uid)
+      // console.log(prod)
+      // console.log(amt)
+      //updates a new table here
+
+      //update the modal to have like a spinning wheel until bakery accepts
+    }
     var bakeries = [];
     var count = 0;
 
@@ -93,14 +102,10 @@
         let amt = row.insertCell(4);
         amt.innerHTML = item.Amount;
         let status = row.insertCell(5);
-        status.innerHTML = '<button class="btn btn-outline-success" data-toggle="modal" data-target="#modal'+count+'">Order</button><div class="modal fade" id="modal'+count+'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="exampleModalLabel">'+ item.Bakery+'</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body">'+item.Product+'<br><select name="amount" id="amount"><option value="one">1</option><option value="two">2</option><option value="three">3</option><option value="four">4</option><option value="five">5</option></select></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button><button type="button" class="btn btn-primary">Confirm Order</button></div></div></div></div>';
+        status.innerHTML = '<button class="btn btn-outline-success" data-toggle="modal" data-target="#modal'+count+'">Order</button><div class="modal fade" id="modal'+count+'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="exampleModalLabel">'+ item.Bakery+'</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"></button></div><div class="modal-body">Enter the amount of '+item.Product+'s you would like! Max: 5 per product.<div class="form-group"></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button><button type="button" class="btn btn-primary" onclick="reqOrder()">Request Order</button></div></div></div></div>';
 
         count += 1;
       });
-    }
-
-    function reqOrder() {
-
     }
   </script>
 
@@ -166,17 +171,16 @@
           // console.log(keys);
           for(var i = 0; i < keys.length; i++) {
             var k = keys[i];
-            console.log(k);
+            // console.log(k);
             var foods;
             var ref = firebase.database().ref('/inventory/'+k);
             ref.on("value", function(snapshot) {
                // console.log(snapshot.val());
                foods = snapshot.val();
             });
-            console.log(foods)
+            // console.log(foods)
             Object.keys(foods).forEach(function(key) {
-                console.log(key, foods[key]);
-                console.log(foods[key].Amount)
+                // console.log(key, foods[key]);
                 var bake, add, phone, amt;
                 amt = foods[key].Amount;
                 var ref = firebase.database().ref('/bakery/'+k+'/Bakery');
@@ -188,6 +192,8 @@
                    add = snapshot.val();
                 });
                 ref = firebase.database().ref('/bakery/'+k+'/Phone');
+                var uid = k;
+                console.log(uid)
                 ref.on("value", function(snapshot) {
                    phone = snapshot.val();
                    bakeries.push({
@@ -195,7 +201,8 @@
                        Address: add,
                        Phone: phone,
                        Product: key,
-                       Amount: amt
+                       Amount: amt,
+                       Uid: uid
                    });
                    console.log(bakeries);
                    loadTableData(bakeries);
