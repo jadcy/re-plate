@@ -59,6 +59,7 @@
               <th>Order History</th>
               <th>Priority</th>
               <th>Tardies</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
@@ -70,27 +71,44 @@
   <br><br>
   <script>
     const items1 = [
-    { Name: "Jady", Phone: "123123123", Email: "jadychan@usc.edu", Product: "Donut", Amount: "2"},
-    { Name: "Brian", Phone: "123123123", Email: "bkoo@usc.edu", Product: "Croissant", Amount: "2"},
-    { Name: "Josh", Phone: "123123123", Email: "bkoo@usc.edu", Product: "Croissant", Amount: "2"},
+    { Name: "Jady", Phone: "123123123", Product: "Donut", Amount: "2", Hist: "1", Priority: "1", Tardies: "1"},
+    { Name: "Brian", Phone: "123123123", Product: "Croissant", Amount: "2", Priority: "1", Tardies: "1"},
+    { Name: "Josh", Phone: "123123123", Product: "Croissant", Amount: "2", Hist: "1", Priority: "1", Tardies: "1"},
     ];
 
-    document.getElementById("requests").innerHTML = Object.keys(items1).length;
+    var reqs = [];
+
+    // document.getElementById("pendings").innerHTML = Object.keys(items1).length;
 
     function loadTableData(items) {
+      $('#pendings tr').remove();
       const table = document.getElementById("pendings");
+      var header = table.createTHead();
+      var row = header.insertRow(0);
+      var cell = row.insertCell(0);
+      cell.innerHTML = "<b>Name</b>";
+      var cell1 = row.insertCell(1);
+      cell1.innerHTML = "<b>Phone</b>";
+      var cell2 = row.insertCell(2);
+      cell2.innerHTML = "<b>Product</b>";
+      var cell3 = row.insertCell(3);
+      cell3.innerHTML = "<b>Amount</b>";
+      var cell4 = row.insertCell(4);
+      cell4.innerHTML = "<b>Priority</b>";
+      var cell5 = row.insertCell(5);
+      cell5.innerHTML = "<b>Status</b>";
       items.forEach( item => {
         let row = table.insertRow();
         let name = row.insertCell(0);
         name.innerHTML = item.Name;
         let phone = row.insertCell(1);
         phone.innerHTML = item.Phone;
-        let email = row.insertCell(2);
-        email.innerHTML = item.Email;
-        let product = row.insertCell(3);
+        let product = row.insertCell(2);
         product.innerHTML = item.Product;
-        let amount = row.insertCell(4);
+        let amount = row.insertCell(3);
         amount.innerHTML = item.Amount;
+        let prior = row.insertCell(4);
+        prior.innerHTML = item.Priority;
         let status = row.insertCell(5);
         status.innerHTML = '<button class="btn btn-outline-danger" id="'+ item.Name+ '" onclick=update('+item.Name+')>Pending</button>';
       });
@@ -143,12 +161,54 @@
 
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
-        // User is signed in.
+        database = firebase.database();
+
+        var ref = database.ref('/requests');
+        ref.on('value', initialData);
+
+        function initialData(data) {
+          reqs = [];
+          var rests = data.val();
+          var keys = Object.keys(rests);
+          for(var i = 0; i < keys.length; i++) {
+            var k = keys[i];
+            console.log(k)
+            var custs;
+            var ref = firebase.database().ref('/requests/'+k);
+            ref.on("value", function(snapshot) {
+               custs = snapshot.val();
+            });
+            Object.keys(custs).forEach(function(key) {
+                var foods = custs[key]
+                console.log(Object.keys(foods).length)
+
+                var name, phon, prod, amt, hist, prior, tard;
+                Object.keys(foods).forEach(function(k) {
+                  console.log(foods[k].Name)
+                  name = foods[k].Name;
+                  phon = foods[k].Phone;
+                  amt = foods[k].Amount;
+                  hist = foods[k].OrderHist;
+                  prior = foods[k].Priority;
+                  tard = foods[k].Tardies;
+                  console.log(k)
+                  reqs.push({
+                    Name: name,
+                    Phone: phon,
+                    Product: k,
+                    Amount: amt,
+                    Priority: prior
+                  });
+                  loadTableData(reqs);
+                });
+            });
+            break;
+          }
+        }
       } else {
         // User is signed out.
         alert("signed out!")
         window.location.href = "index.html";
-        // ...
       }
     });
   </script>
