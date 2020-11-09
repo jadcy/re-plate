@@ -122,11 +122,11 @@
       if(btn.innerHTML == "Pending" ){
         var updates = {};
         updates['/requests/' + firebase.auth().currentUser.uid + '/' + custId + '/' + prod + '/Status'] = "accepted";
-
-        firebase.database().ref().update(updates);
-        console.log('acepted')
         btn.innerHTML = "Accepted";
         btn.className = "btn btn btn-outline-success";
+        firebase.database().ref().update(updates);
+        console.log('acepted')
+
       }
       else{
         btn.innerHTML = "Pending";
