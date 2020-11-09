@@ -70,17 +70,10 @@
 
   <br><br>
   <script>
-    const items1 = [
-    { Name: "Jady", Phone: "123123123", Product: "Donut", Amount: "2", Hist: "1", Priority: "1", Tardies: "1"},
-    { Name: "Brian", Phone: "123123123", Product: "Croissant", Amount: "2", Priority: "1", Tardies: "1"},
-    { Name: "Josh", Phone: "123123123", Product: "Croissant", Amount: "2", Hist: "1", Priority: "1", Tardies: "1"},
-    ];
-
     var reqs = [];
 
-    // document.getElementById("pendings").innerHTML = Object.keys(items1).length;
-
     function loadTableData(items) {
+      var count = 0;
       $('#pendings tr').remove();
       const table = document.getElementById("pendings");
       var header = table.createTHead();
@@ -110,23 +103,34 @@
         let prior = row.insertCell(4);
         prior.innerHTML = item.Priority;
         let status = row.insertCell(5);
-        status.innerHTML = '<button class="btn btn-outline-danger" id="'+ item.Name+ '" onclick=update('+item.Name+')>Pending</button>';
+        var info = [];
+        info.push(item.CustId);
+        info.push(item.Product);
+        console.log(info)
+        status.innerHTML = '<button class="btn btn-outline-danger" id="p'+count+'" onclick=update(this)>Pending</button><p style="display:none" id="p'+count+'info">'+info+'</p>';
+
+        count += 1;
       });
     }
 
-    loadTableData(items1);
+    function update(btn) {
+      var infos = document.getElementById(btn.id+"info").innerHTML;
+      var inf = infos.split(",");
+      var custId = inf[0];
+      var prod = inf[1];
 
-    function update(id) {
-      console.log(id.innerHTML)
-      // console.log("hello");
-      // console.log(document.getElementById(id).innerHTML);
-      if(id.innerHTML == "Pending" ){
-        id.innerHTML = "Accepted";
-        id.className = "btn btn btn-outline-success";
+      if(btn.innerHTML == "Pending" ){
+        var updates = {};
+        updates['/requests/' + firebase.auth().currentUser.uid + '/' + custId + '/' + prod + '/Status'] = "accepted";
+
+        firebase.database().ref().update(updates);
+        console.log('acepted')
+        btn.innerHTML = "Accepted";
+        btn.className = "btn btn btn-outline-success";
       }
       else{
-        id.innerHTML = "Pending";
-        id.className = "btn btn btn-outline-danger";
+        btn.innerHTML = "Pending";
+        btn.className = "btn btn btn-outline-danger";
       }
     }
   </script>
@@ -172,37 +176,37 @@
           var keys = Object.keys(rests);
           for(var i = 0; i < keys.length; i++) {
             var k = keys[i];
-            console.log(k)
             var custs;
             var ref = firebase.database().ref('/requests/'+k);
             ref.on("value", function(snapshot) {
                custs = snapshot.val();
             });
-            Object.keys(custs).forEach(function(key) {
-                var foods = custs[key]
-                console.log(Object.keys(foods).length)
-
-                var name, phon, prod, amt, hist, prior, tard;
-                Object.keys(foods).forEach(function(k) {
-                  console.log(foods[k].Name)
-                  name = foods[k].Name;
-                  phon = foods[k].Phone;
-                  amt = foods[k].Amount;
-                  hist = foods[k].OrderHist;
-                  prior = foods[k].Priority;
-                  tard = foods[k].Tardies;
-                  console.log(k)
-                  reqs.push({
-                    Name: name,
-                    Phone: phon,
-                    Product: k,
-                    Amount: amt,
-                    Priority: prior
+            if(k == firebase.auth().currentUser.uid) {
+              console.log(k)
+              Object.keys(custs).forEach(function(key) {
+                  // console.log(key)
+                  var foods = custs[key]
+                  var name, phon, prod, amt, hist, prior, tard;
+                  Object.keys(foods).forEach(function(k) {
+                    name = foods[k].Name;
+                    phon = foods[k].Phone;
+                    amt = foods[k].Amount;
+                    hist = foods[k].OrderHist;
+                    prior = foods[k].Priority;
+                    tard = foods[k].Tardies;
+                    reqs.push({
+                      Name: name,
+                      Phone: phon,
+                      Product: k,
+                      Amount: amt,
+                      Priority: prior,
+                      CustId: key
+                    });
+                    loadTableData(reqs);
                   });
-                  loadTableData(reqs);
-                });
-            });
-            break;
+              });
+              break;
+            }
           }
         }
       } else {

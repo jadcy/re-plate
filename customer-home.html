@@ -62,7 +62,6 @@
   <script>
     function reqOrder(count) {
 
-      //alert("confirming " + sessionStorage.getItem('count'));
       var info = "info" + count;
       var d = document.getElementById(info).innerHTML;
       var infos = d.split(" ");
@@ -72,34 +71,27 @@
 
       var uid = infos[0]
       var product = infos[1]
-      console.log(uid)
-      console.log(product)
       var custId = firebase.auth().currentUser.uid;
 
       var name, phone, hist, prior, tard;
       var ref = firebase.database().ref('/customer/'+custId+'/First');
       ref.on("value", function(snapshot) {
-         console.log(snapshot.val());
          name = snapshot.val();
       });
       ref = firebase.database().ref('/customer/'+custId+'/Phone');
       ref.on("value", function(snapshot) {
-         console.log(snapshot.val());
          phone = snapshot.val();
       });
       ref = firebase.database().ref('/customer/'+custId+'/OrderHist');
       ref.on("value", function(snapshot) {
-         console.log(snapshot.val());
          hist = snapshot.val();
       });
       ref = firebase.database().ref('/customer/'+custId+'/Priority');
       ref.on("value", function(snapshot) {
-         console.log(snapshot.val());
          prior = snapshot.val();
       });
       ref = firebase.database().ref('/customer/'+custId+'/Tardies');
       ref.on("value", function(snapshot) {
-         console.log(snapshot.val());
          tard = snapshot.val();
       });
 
@@ -113,9 +105,19 @@
         Status: "waiting"
       });
 
-      alert('waitin for bakery to confirm')
-
-      //update the modal to have like a spinning wheel until bakery accepts
+      var status;
+      var ref = firebase.database().ref('/requests/' + uid + '/' + custId + '/' + product + '/Status');
+      ref.on("value", function(snapshot) {
+         console.log(snapshot.val());
+         status = snapshot.val();
+         if(status == "waiting") {
+           document.getElementById("exampleModalLabelProduct"+count).innerHTML = '<div class="spinner-grow text-info" role="status"></div><p>Waiting for bakery to accept your order!</p>';
+           document.getElementById("button"+count).style.display = 'none';
+         } else {
+           document.getElementById("exampleModalLabelProduct"+count).innerHTML = '<p>Accepted! <br>Order: '+a+' '+product+'<br>Please pick up your food promptly at '+document.getElementById("exampleModalLabel"+count).innerText+'!</p>';
+           document.getElementById("button"+count).style.display = 'none';
+         }
+      });
     }
     var bakeries = [];
     var count = 0;
@@ -150,7 +152,6 @@
         let amt = row.insertCell(4);
         amt.innerHTML = item.Amount;
         let status = row.insertCell(5);
-        //console.log("hjehe:"+Uid);
         status.innerHTML = '<button class="btn btn-outline-success" data-toggle="modal" data-target="#modal'+count+'">Order</button><div class="modal fade" id="modal'+count+'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="exampleModalLabel'+count+'">'+ item.Bakery+'</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"></button></div><div class="modal-body" id="exampleModalLabelProduct'+count+'">Enter the amount of '+item.Product+'s you would like! Max: 5 per product.<select class="form-control" id="select'+count+'"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button><button id="button'+count+'" type="button" class="btn btn-primary" onclick="reqOrder('+count+');">Request Order</button><p id="info'+count+'" style="display:none">'+item.Uid+' '+item.Product+'</p></div></div></div></div>';
 
         count += 1;
@@ -242,7 +243,7 @@
                 });
                 ref = firebase.database().ref('/bakery/'+k+'/Phone');
                 var uid = k;
-                console.log(uid)
+                // console.log(uid)
                 ref.on("value", function(snapshot) {
                    phone = snapshot.val();
                    bakeries.push({
@@ -253,7 +254,7 @@
                        Amount: amt,
                        Uid: uid
                    });
-                   console.log(bakeries);
+                   // console.log(bakeries);
                    loadTableData(bakeries);
                 });
             });
