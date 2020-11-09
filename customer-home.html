@@ -60,8 +60,20 @@
   </div>
 
   <script>
-    function reqOrder(uid, prod, amt) {
-      alert("confirming " + `${uid}, ${prod}, ${amt}`)
+    function reqOrder(count) {
+
+      //alert("confirming " + sessionStorage.getItem('count'));
+      var index = "exampleModalLabel"+count;
+      var productnode = "exampleModalLabelProduct"+count;
+    var bakery = document.getElementById(index).innerHTML;
+    var product = document.getElementById(productnode).innerHTML;
+
+    console.log(product);
+    var productname = product.split(" ");
+    console.log(productname[4]);
+    console.log(index);
+     // console.log(name);
+     alert("You ordered "+productname[4]+ " at "+bakery);
       // console.log(uid)
       // console.log(prod)
       // console.log(amt)
@@ -102,7 +114,8 @@
         let amt = row.insertCell(4);
         amt.innerHTML = item.Amount;
         let status = row.insertCell(5);
-        status.innerHTML = '<button class="btn btn-outline-success" data-toggle="modal" data-target="#modal'+count+'">Order</button><div class="modal fade" id="modal'+count+'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="exampleModalLabel">'+ item.Bakery+'</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"></button></div><div class="modal-body">Enter the amount of '+item.Product+'s you would like! Max: 5 per product.<div class="form-group"></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button><button type="button" class="btn btn-primary" onclick="reqOrder()">Request Order</button></div></div></div></div>';
+        //console.log("hjehe:"+Uid);
+        status.innerHTML = '<button class="btn btn-outline-success" data-toggle="modal" data-target="#modal'+count+'">Order</button><div class="modal fade" id="modal'+count+'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="exampleModalLabel'+count+'">'+ item.Bakery+'</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"></button></div><div class="modal-body" id="exampleModalLabelProduct'+count+'">Enter the amount of '+item.Product+'s you would like! Max: 5 per product.<div class="form-group"></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button><button id="button'+count+'" type="button" class="btn btn-primary" onclick="reqOrder('+count+');">Request Order</button></div></div></div></div>';
 
         count += 1;
       });
