@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/jadcy/re-plate/issues"
   },
-  "homepage": ".",
+  "homepage": "https://replate-cs499.herokuapp.com/index.html",
   "dependencies": {
     "firebase": "^8.0.0"
   },
