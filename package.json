@@ -19,5 +19,6 @@
   "homepage": "https://github.com/jadcy/re-plate#readme",
   "dependencies": {
     "firebase": "^8.0.0"
-  }
+  },
+  "devDependencies": {}
 }
