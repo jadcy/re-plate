@@ -46,6 +46,7 @@
     <br>
     <h1 id="greeting">Here are the customers that requested to pick up your food.</h1>
     <h5 style = "color:grey;"> If a customer requests an order, a red "Pending" button will appear next to their information. Once you click the button, you're accepting their request and they'll make their way to your bakery! If they show up on time, click the green "Picked Up" button and it will update to "Done."</h5>
+    <p>Also! The smaller the number, the lower the priority they have. This is the equation we use: 1/(.75*history + .25*tardies). For now, we will assume that all customers will be on time.</p>
   </div>
 
   <div class="row justify-content-center">
@@ -108,6 +109,8 @@
         info.push(item.CustId);
         info.push(item.Product);
         info.push(item.Amount);
+        info.push(item.Hist);
+        info.push(item.Inventory);
 
         var ref = database.ref('/requests/'+ firebase.auth().currentUser.uid + '/' + item.CustId + '/' + item.Product + '/Status');
         ref.on("value", function(snapshot) {
@@ -132,37 +135,19 @@
       var custId = inf[0];
       var prod = inf[1];
       var amt = inf[2];
-      var currInventory; var currHist;
+      var currHist = inf[3];
+      var currInvent = inf[4];
 
-      var ref = database.ref('/inventory/'+ firebase.auth().currentUser.uid + '/' + prod + '/Amount');
-      ref.on("value", function(snapshot) {
-        console.log("inventory")
-        console.log(snapshot.val());
-        console.log("-----")
-        currInventory = snapshot.val();
-        var newInvent = currInventory - amt;
-        updates['/inventory/'+ firebase.auth().currentUser.uid + '/' + prod + '/Amount'] = newInvent;
-      });
-
-      ref = database.ref('customer/' + custId + '/OrderHist');
-      ref.on("value", function(snapshot) {
-        console.log("history")
-        console.log(snapshot.val());
-        console.log("-----")
-        currHist = snapshot.val();
-        var newOrderHist = currHist + amt;
-        updates['customer/' + custId + '/OrderHist'] = newOrderHist;
-        updates['customer/' + custId + '/Priority'] = calculate(newOrderHist, 0);
-        updates['/requests/'+ firebase.auth().currentUser.uid + '/' + custId + '/Priority'] = calculate(newOrderHist, 0);
-      });
+      updates['inventory/' + firebase.auth().currentUser.uid + '/' + prod + '/Amount'] = currInvent - amt;
+      updates['customer/' + custId + '/OrderHist'] = currHist + amt;
+      updates['customer/' + custId + '/Priority'] = calculate(currHist + amt, 0);
+      updates['/requests/'+ firebase.auth().currentUser.uid + '/' + custId + '/' + prod + '/Priority'] = calculate(currHist + amt, 0);
 
       updates['/requests/' + firebase.auth().currentUser.uid + '/' + custId + '/' + prod + '/Status'] = "done";
       firebase.database().ref().update(updates);
     }
 
     function update(btn) {
-      console.log(btn)
-      console.log("inside update")
       var infos = document.getElementById(btn.id+"info").innerHTML;
       var inf = infos.split(",");
       var custId = inf[0];
@@ -229,28 +214,37 @@
             ref.on("value", function(snapshot) {
                custs = snapshot.val();
             });
+
             if(k == firebase.auth().currentUser.uid) {
-              console.log(k)
+              // console.log(k)
               Object.keys(custs).forEach(function(key) {
+                  var bakUser = k;
                   // console.log(key)
                   var foods = custs[key]
-                  var name, phon, prod, amt, hist, prior, tard;
+                  var name, phon, prod, amt, hist, prior, tard, invent;
                   Object.keys(foods).forEach(function(k) {
-                    name = foods[k].Name;
-                    phon = foods[k].Phone;
-                    amt = foods[k].Amount;
-                    hist = foods[k].OrderHist;
-                    prior = foods[k].Priority;
-                    tard = foods[k].Tardies;
-                    reqs.push({
-                      Name: name,
-                      Phone: phon,
-                      Product: k,
-                      Amount: amt,
-                      Priority: prior,
-                      CustId: key
+                    ref = firebase.database().ref('/inventory/'+ bakUser + '/' + k + '/Amount');
+                    ref.on("value", function(snapshot) {
+                      console.log(snapshot.val())
+                      invent = snapshot.val();
+                      name = foods[k].Name;
+                      phon = foods[k].Phone;
+                      amt = foods[k].Amount;
+                      hist = foods[k].OrderHist;
+                      prior = foods[k].Priority;
+                      tard = foods[k].Tardies;
+                      reqs.push({
+                        Name: name,
+                        Phone: phon,
+                        Product: k,
+                        Amount: amt,
+                        Hist: hist,
+                        Priority: prior,
+                        CustId: key,
+                        Inventory: invent
+                      });
+                      loadTableData(reqs);
                     });
-                    loadTableData(reqs);
                   });
               });
               break;

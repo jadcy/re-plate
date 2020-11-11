@@ -80,45 +80,6 @@
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
 
-
-    //testing
-    database = firebase.database();
-
-    var ref = database.ref('customer');
-    ref.on('value', gotData, errData);
-
-    function gotData(data) {
-      var customers = data.val();
-      var keys = Object.keys(customers);
-      console.log(keys);
-      for(var i = 0; i < keys.length; i++) {
-        var k = keys[i];
-        var username = customers[k].Username;
-        var hist = customers[k].OrderHist;
-        var tardy = customers[k].Tardies;
-
-        var updates = {};
-        updates['/customer/' + username + '/Priority/'] = calculate(username, hist, tardy);
-
-        firebase.database().ref().update(updates);
-
-      }
-    }
-
-    function errData(err) {
-      console.log('Error');
-      console.log(err);
-    }
-
-    function calculate(user, history, tardies) {
-      //calculate how much priority
-      if(history == 0 && tardies == 0) {
-        return 0;
-      }
-      return 1/(.75*history + .25*tardies)
-    }
-    //testing
-
     const formElem = document.querySelector('form');
 
     firebase.auth().onAuthStateChanged(function(user) {
