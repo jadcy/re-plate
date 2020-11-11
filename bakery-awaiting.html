@@ -45,6 +45,7 @@
   <div class="col-md-6 offset-md-3">
     <br>
     <h1 id="greeting">Here are the customers that requested to pick up your food.</h1>
+    <h5 style = "color:grey;"> If a customer requests an order, a red "Pending" button will appear next to their information. Once you click the button, you're accepting their request and they'll make their way to your bakery! If they show up on time, click the green "Picked Up" button and it will update to "Done."</h5>
   </div>
 
   <div class="row justify-content-center">
@@ -106,32 +107,79 @@
         var info = [];
         info.push(item.CustId);
         info.push(item.Product);
-        console.log(info)
-        status.innerHTML = '<button class="btn btn-outline-danger" id="p'+count+'" onclick=update(this)>Pending</button><p style="display:none" id="p'+count+'info">'+info+'</p>';
+        info.push(item.Amount);
+
+        var ref = database.ref('/requests/'+ firebase.auth().currentUser.uid + '/' + item.CustId + '/' + item.Product + '/Status');
+        ref.on("value", function(snapshot) {
+          // console.log(snapshot.val())
+          if(snapshot.val() == "accepted") {
+            status.innerHTML = '<button class="btn btn-outline-success" id="p'+count+'" onclick=done(this)>Picked Up</button><p style="display:none" id="p'+count+'info">'+info+'</p>'
+          } else if(snapshot.val() == "waiting"){
+            status.innerHTML = '<button class="btn btn-outline-danger" id="p'+count+'" onclick=update(this)>Pending</button><p style="display:none" id="p'+count+'info">'+info+'</p>';
+          } else {
+            status.innerHTML = 'Done';
+          }
+        });
 
         count += 1;
       });
     }
 
+    function done(btn) {
+      var updates = {};
+      var infos = document.getElementById(btn.id+"info").innerHTML;
+      var inf = infos.split(",");
+      var custId = inf[0];
+      var prod = inf[1];
+      var amt = inf[2];
+      var currInventory; var currHist;
+
+      var ref = database.ref('/inventory/'+ firebase.auth().currentUser.uid + '/' + prod + '/Amount');
+      ref.on("value", function(snapshot) {
+        console.log("inventory")
+        console.log(snapshot.val());
+        console.log("-----")
+        currInventory = snapshot.val();
+        var newInvent = currInventory - amt;
+        updates['/inventory/'+ firebase.auth().currentUser.uid + '/' + prod + '/Amount'] = newInvent;
+      });
+
+      ref = database.ref('customer/' + custId + '/OrderHist');
+      ref.on("value", function(snapshot) {
+        console.log("history")
+        console.log(snapshot.val());
+        console.log("-----")
+        currHist = snapshot.val();
+        var newOrderHist = currHist + amt;
+        updates['customer/' + custId + '/OrderHist'] = newOrderHist;
+        updates['customer/' + custId + '/Priority'] = calculate(newOrderHist, 0);
+        updates['/requests/'+ firebase.auth().currentUser.uid + '/' + custId + '/Priority'] = calculate(newOrderHist, 0);
+      });
+
+      updates['/requests/' + firebase.auth().currentUser.uid + '/' + custId + '/' + prod + '/Status'] = "done";
+      firebase.database().ref().update(updates);
+    }
+
     function update(btn) {
+      console.log(btn)
+      console.log("inside update")
       var infos = document.getElementById(btn.id+"info").innerHTML;
       var inf = infos.split(",");
       var custId = inf[0];
       var prod = inf[1];
 
-      if(btn.innerHTML == "Pending" ){
-        var updates = {};
-        updates['/requests/' + firebase.auth().currentUser.uid + '/' + custId + '/' + prod + '/Status'] = "accepted";
-        btn.innerHTML = "Picked Up";
-        btn.className = "btn btn btn-outline-success";
-        firebase.database().ref().update(updates);
-        console.log('acepted')
+      var updates = {};
+      updates['/requests/' + firebase.auth().currentUser.uid + '/' + custId + '/' + prod + '/Status'] = "accepted";
 
+      firebase.database().ref().update(updates);
+    }
+
+    function calculate(history, tardies) {
+      //calculate how much priority
+      if(history == 0 && tardies == 0) {
+        return 0;
       }
-      else{
-        btn.innerHTML = "Done";
-        btn.className = "btn btn btn-outline-info";
-      }
+      return 1/(.75*history + .25*tardies)
     }
   </script>
 
